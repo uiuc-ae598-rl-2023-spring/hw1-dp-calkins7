@@ -36,5 +36,9 @@ def TD_0(pi, env, alpha, num_episodes, gamma=0.95):
             V[s] = V[s] + alpha*(r + gamma*V[s1] - V[s])
             s = s1
 
+        # Print if ii is a factor of 500
+        if (ii % 500) == 0:
+            print(f'TD(0) Episode {ii} / {num_episodes}')
+
     return V
 

@@ -18,8 +18,8 @@ def main():
         env.reset()
 
         alpha = 0.5
-        epsilon = 0.4125
-        num_episodes = 1000
+        epsilon = 0.1
+        num_episodes = 15000
 
         # Apply unit test to check state representation
         test_x_to_s(env)
@@ -62,15 +62,15 @@ def main():
             plot_learning_curve(logs, 'SARSA_vary_alp.png', 'pendulum', 'a')
 
     if tag_Q_pendulum:
-        n_theta = 15
-        n_thetadot = 21
+        n_theta = 20
+        n_thetadot = 26
         env = discrete_pendulum.Pendulum(n_theta, n_thetadot)
 
         # Apply unit test to check state representation
         test_x_to_s(env)
 
         alpha = 0.5
-        epsilon = 0.42
+        epsilon = 0.1
         num_episodes = 1000
 
         env.reset()

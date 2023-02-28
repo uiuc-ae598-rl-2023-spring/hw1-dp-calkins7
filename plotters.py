@@ -192,11 +192,12 @@ def plot_return(log, name, path):
     n = log['n']
 
     ax = plt.subplot()
-    ax.plot(n, G)
+    ax.scatter(n, G)
     plt.grid()
     plt.xlabel('Episode Number')
     plt.ylabel('G')
     plt.title("Episode Return")
+    plt.yscale("symlog")
     plt.savefig(os.path.join('.', 'figures', path, name))
     plt.close()
     return
@@ -221,9 +222,9 @@ def plot_learning_curve(logs, name, path, eOrATag):
         n = log['n']
 
         if eOrATag == 'e':
-            plt.plot(n, G, label=f'$\epsilon$ = %.3f' % log['epsilon'])
+            plt.scatter(n, G, label=f'$\epsilon$ = %.3f' % log['epsilon'])
         elif eOrATag == 'a':
-            plt.plot(n, G, label=f'α = %.3f' % log['alpha'])
+            plt.scatter(n, G, label=f'α = %.3f' % log['alpha'])
 
     plt.grid()
     plt.legend(loc="upper left")
@@ -234,6 +235,7 @@ def plot_learning_curve(logs, name, path, eOrATag):
         plt.title(f'Episode Return, α = %.3f' % log['alpha'])
     elif eOrATag == 'a':
         plt.title(f'Episode Return, $\epsilon$ = %.3f' % log['epsilon'])
+    plt.yscale("symlog")
     plt.savefig(os.path.join('.', 'figures', path, name))
     plt.close()
     return
@@ -273,13 +275,19 @@ def plot_example_traj_pendulum(pi_star, env, name, path):
         log['theta'].append(env.x[0])
         log['thetadot'].append(env.x[1])
 
+    # Clip theta
+    thetas = []
+    for theta in log['theta']:
+        thetas.append(((theta + np.pi) % (2 * np.pi)) - np.pi)
+
+
     # Plot data and save to png file
     fig, ax = plt.subplots(2, 1, figsize=(10, 10))
     ax[0].plot(log['t'], log['s'])
     ax[0].plot(log['t'][:-1], log['a'])
     ax[0].plot(log['t'][:-1], log['r'])
     ax[0].legend(['s', 'a', 'r'])
-    ax[1].plot(log['t'], log['theta'])
+    ax[1].plot(log['t'], thetas)
     ax[1].plot(log['t'], log['thetadot'])
     ax[1].legend(['theta', 'thetadot'])
     plt.savefig(os.path.join('.', 'figures', path, name))

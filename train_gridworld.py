@@ -58,8 +58,8 @@ def main():
         env.reset()
 
         alpha = 0.5
-        epsilon = 1
-        num_episodes = 1000
+        epsilon = 0.1
+        num_episodes = 5000
 
         Q_star, pi_star, log = sarsa(env, alpha, epsilon, num_episodes)
         print(Q_star)
@@ -104,8 +104,8 @@ def main():
         env.reset()
 
         alpha = 0.5
-        epsilon = 1e-3
-        num_episodes = 1000
+        epsilon = 0.1
+        num_episodes = 5000
 
         Q_star, pi_star, log = q_learning(env, alpha, epsilon, num_episodes)
         print(Q_star)

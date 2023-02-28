@@ -54,6 +54,10 @@ def q_learning(env, alpha, epsilon, num_episodes, gamma=0.95):
         log['n'].append(ii)
         log['return'].append(episode_return)
 
+        # Print if ii is a factor of 500
+        if (ii % 500) == 0:
+            print(f'Q-Learning Episode {ii} / {num_episodes}')
+
     # Get pi according to epsilon-greedy for all states
     pi = epsilon_greedy_pi_star(env.num_states, Q)
 
