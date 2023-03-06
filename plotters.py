@@ -52,9 +52,10 @@ def plot_mean_value_func(log, name, path):
         V_mean.append(np.mean(log['V'][ii]))
 
     ax = plt.subplot()
-    ax.plot(log['n'][0:-1], V_mean)
-    plt.xlabel('Number of Policy Eval Iter')
+    ax.plot(log['n'][1:], V_mean)
+    plt.xlabel('Number of Iters')
     plt.ylabel('Mean V(s)')
+    plt.grid()
     plt.savefig(os.path.join('.', 'figures', path, name))
     plt.close()
     return
@@ -98,15 +99,25 @@ def plot_example_traj_grid(pi_star, env, name, modelFreeTag=False, logPass=0):
         log['r'].append(r)
 
     # Plot data and save to png file
-    ax1 = plt.subplot()
-    ax1.plot(log['t'], log['s'])
-    ax1.plot(log['t'][:-1], log['a'])
-    ax1.plot(log['t'][:-1], log['r'])
-    plt.legend(['s', 'a', 'r'])
+    fig, ax1 = plt.subplots(1,3, figsize=(12,4), gridspec_kw={'width_ratios': [1, 1, 1]})
+    ax1[0].plot(log['t'], log['s'])
+    ax1[0].set_ylabel('State')
+    ax1[0].set_xlabel('Time')
+    ax1[1].plot(log['t'][:-1], log['a'])
+    ax1[1].set_ylabel('Action')
+    ax1[1].set_xlabel('Time')
+    ax1[2].plot(log['t'][:-1], log['r'])
+    ax1[2].set_ylabel('Reward')
+    ax1[2].set_xlabel('Time')
+    plt.subplots_adjust(wspace = 0.3, left=0.07, right=0.97)
+
+    for ii in range(3):
+        ax1[ii].grid()
+
     if modelFreeTag:
-        plt.title('Trajectory, $\epsilon$ = %.3f, α = %.3f' % (eps, alpha))
+        plt.suptitle('Gridworld Trajectory, $\epsilon$ = %.3f, α = %.3f' % (eps, alpha))
     else:
-        plt.title('Trajectory')
+        plt.suptitle('Gridworld Trajectory')
 
     plt.savefig(os.path.join('.', 'figures', 'gridworld', name))
     plt.close()
@@ -222,9 +233,9 @@ def plot_learning_curve(logs, name, path, eOrATag):
         n = log['n']
 
         if eOrATag == 'e':
-            plt.scatter(n, G, label=f'$\epsilon$ = %.3f' % log['epsilon'])
+            plt.scatter(n, G, s=3, alpha = 0.5, label=f'$\epsilon$ = %.3f' % log['epsilon'])
         elif eOrATag == 'a':
-            plt.scatter(n, G, label=f'α = %.3f' % log['alpha'])
+            plt.scatter(n, G, s=3, alpha = 0.5, label=f'α = %.3f' % log['alpha'])
 
     plt.grid()
     plt.legend(loc="upper left")
@@ -282,14 +293,32 @@ def plot_example_traj_pendulum(pi_star, env, name, path):
 
 
     # Plot data and save to png file
-    fig, ax = plt.subplots(2, 1, figsize=(10, 10))
-    ax[0].plot(log['t'], log['s'])
-    ax[0].plot(log['t'][:-1], log['a'])
-    ax[0].plot(log['t'][:-1], log['r'])
-    ax[0].legend(['s', 'a', 'r'])
-    ax[1].plot(log['t'], thetas)
-    ax[1].plot(log['t'], log['thetadot'])
-    ax[1].legend(['theta', 'thetadot'])
+    fig = plt.figure(figsize=(10, 10))
+
+    gs = fig.add_gridspec(2,3)
+    ax1 = fig.add_subplot(gs[0,0])
+    ax2 = fig.add_subplot(gs[0,1])
+    ax3 = fig.add_subplot(gs[0,2])
+    ax4 = fig.add_subplot(gs[1,:])
+    ax1.plot(log['t'], log['s'])
+    ax1.set_xlabel('Time')
+    ax1.set_ylabel('State')
+    ax2.plot(log['t'][:-1], log['a'])
+    ax2.set_xlabel('Time')
+    ax2.set_ylabel('Action')
+    ax3.plot(log['t'][:-1], log['r'])
+    ax3.set_xlabel('Time')
+    ax3.set_ylabel('Reward')
+
+    ax4.plot(log['t'], thetas)
+    ax4.plot(log['t'], log['thetadot'])
+    ax4.plot(log['t'], np.ones(np.shape(log['t']))*0.1*np.pi, 'g--')
+    ax4.plot(log['t'], np.ones(np.shape(log['t'])) * -0.1 * np.pi, 'g--')
+    ax4.legend(['θ', '$\dot{θ}$', 'Good Theta Zone'])
+    ax4.set_xlabel('Time')
+    ax4.set_ylabel('θ \ $\dot{θ}$ [rad]')
+
+    plt.subplots_adjust(wspace=0.3, left=0.07, right=0.97, top=0.99)
     plt.savefig(os.path.join('.', 'figures', path, name))
     plt.close()
     return
@@ -310,19 +339,25 @@ def plot_pendulum_policy(pi_star, name, path, n_theta, n_thetadot, log):
     alpha = log['alpha']
 
     # reshape policy into theta, theta_dot space
-    pi_star = np.reshape(pi_star, (n_theta, n_thetadot))
-    X,Y = np.meshgrid( np.arange(0, n_thetadot), np.arange(0, n_theta))
+    # pi_star = np.reshape(pi_star, (n_theta, n_thetadot))
+    # X,Y = np.meshgrid( np.arange(0, n_thetadot), np.arange(0, n_theta))
 
     fig, ax = plt.subplots(1,1)
     plt.grid()
-    surf = ax.contourf(X, Y, pi_star)
-    plt.ylabel('θ')
-    plt.xlabel('$\dot{θ}$')
+    # surf = ax.contourf(X, Y, pi_star)
+    # plt.ylabel('θ')
+    # plt.xlabel('$\dot{θ}$')
+    plt.plot(pi_star)
+    plt.ylabel("pi(s)")
+    plt.xlabel('state')
+
+
     plt.title('Pendulum Policy, $\epsilon$ = %.3f, α = %.3f' % (eps, alpha))
-    cbar = fig.colorbar(surf)
-    cbar.ax.set_ylabel('$\pi(s)$')
+    # cbar = fig.colorbar(surf)
+    # cbar.ax.set_ylabel('$\pi(s)$')
 
     plt.savefig(os.path.join('.', 'figures', path, name))
+    plt.close()
     return
 
 

@@ -19,8 +19,10 @@ def epsilon_greedy(epsilon, num_actions, s, Q_pi):
 
     # Choose action with epsilon greedy weights
     a_greedy = random.choices(range(num_actions), weights=weights, k=1)
-
     return a_greedy[0]
+
+
+
 
 def epsilon_greedy_pi_star(num_states, Q_pi):
     """
@@ -34,7 +36,6 @@ def epsilon_greedy_pi_star(num_states, Q_pi):
     for s in range(num_states):
         # Identify greedy action
         greedy = np.argmax(Q_pi[s][:])
-
         pi_star[s] = greedy
 
     return pi_star

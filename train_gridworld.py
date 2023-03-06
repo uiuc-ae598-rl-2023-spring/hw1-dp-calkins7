@@ -11,8 +11,8 @@ def main():
     tag_PI = False  # Policy Iteration
     tag_VI = False  # Value Iteration
     tag_SARSA_gridworld = False  # SARSA on gridworld
-    tag_Q_gridworld = False  # Q-learning on gridworld
-    tag_run_eps_alpha_grid = False  # generate plots for learning rate with varying eps and alpha
+    tag_Q_gridworld = True  # Q-learning on gridworld
+    tag_run_eps_alpha_grid = True  # generate plots for learning rate with varying eps and alpha
 
 
     if tag_PI:
@@ -59,14 +59,15 @@ def main():
 
         alpha = 0.5
         epsilon = 0.1
-        num_episodes = 5000
+        num_episodes = 10000
 
         Q_star, pi_star, log = sarsa(env, alpha, epsilon, num_episodes)
         print(Q_star)
         print(pi_star)
 
         # Apply TD0 to learn state value function
-        V_star = TD_0(pi_star, env, alpha, num_episodes)
+        V_star = TD_0(pi_star, env, alpha, num_episodes=1000)
+        print(V_star)
 
         # Plot return per number of episodes
         plot_return(log, 'SARSA_grid_return.png', 'gridworld')
@@ -81,22 +82,25 @@ def main():
         log['V'] = V_star
         plot_state_val_func(log, 'SARSA_grid_state_val.png', 'gridworld', modelFreeTag=True, logPass=log)
 
+        num_episodes = 1000
         if tag_run_eps_alpha_grid:
             # plot learning curve for varying eps
+            alpha = 0.5
             epsVec = np.linspace(0.01, 1, 5)
             logs = []
             for eps in epsVec:
                 Q_star, pi_star, log = sarsa(env, alpha, eps, num_episodes)
                 logs.append(log)
-            plot_learning_curve(logs, 'SARSA_vary_eps.png', 'gridworld', 'e')
+            plot_learning_curve(logs, 'SARSA_grid_vary_eps.png', 'gridworld', 'e')
 
             # plot learning curve for varying alpha
+            epsilon = 0.1
             alpVec = np.linspace(0.01, 1, 5)
             logs = []
             for alp in alpVec:
                 Q_star, pi_star, log = sarsa(env, alp, epsilon, num_episodes)
                 logs.append(log)
-            plot_learning_curve(logs, 'SARSA_vary_alp.png', 'gridworld', 'a')
+            plot_learning_curve(logs, 'SARSA_grid_vary_alp.png', 'gridworld', 'a')
 
 
     if tag_Q_gridworld:
@@ -104,8 +108,8 @@ def main():
         env.reset()
 
         alpha = 0.5
-        epsilon = 0.1
-        num_episodes = 5000
+        epsilon = 0.2
+        num_episodes = 10000
 
         Q_star, pi_star, log = q_learning(env, alpha, epsilon, num_episodes)
         print(Q_star)
@@ -127,6 +131,7 @@ def main():
         log['V'] = V_star
         plot_state_val_func(log, 'Q_grid_state_val.png', 'gridworld', modelFreeTag=True, logPass=log)
 
+        num_episodes = 1000
         if tag_run_eps_alpha_grid:
             # plot learning curve for varying eps
             epsVec = np.linspace(0.01, 1, 5)
@@ -134,7 +139,7 @@ def main():
             for eps in epsVec:
                 Q_star, pi_star, log = sarsa(env, alpha, eps, num_episodes)
                 logs.append(log)
-            plot_learning_curve(logs, 'Q_vary_eps.png', 'gridworld', 'e')
+            plot_learning_curve(logs, 'Q_grid_vary_eps.png', 'gridworld', 'e')
 
             # plot learning curve for varying alpha
             alpVec = np.linspace(0.01, 1, 5)
@@ -142,5 +147,8 @@ def main():
             for alp in alpVec:
                 Q_star, pi_star, log = sarsa(env, alp, epsilon, num_episodes)
                 logs.append(log)
-            plot_learning_curve(logs, 'Q_vary_alp.png', 'gridworld', 'a')
+            plot_learning_curve(logs, 'Q_grid_vary_alp.png', 'gridworld', 'a')
 
+
+if __name__ == '__main__':
+    main()
